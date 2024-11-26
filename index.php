@@ -2,14 +2,11 @@
 require_once('functions.php');
 require_once('db.php');
 
+$query=$db->query('SELECT * FROM posts');
+
 $auth = new Auth();
 
 $auth->redirectIfAuthenticated('MusicPost/index.php');
-
-
-    $string = file_get_contents('posts.json');
-    $php_array = json_decode($string, true);
-    $blogs = $php_array;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,13 +50,13 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                 <!-- Blog entries-->
                 <div class="col-lg-8">
                     <!-- Featured blog post-->
-                    <?php for($i=0; $i<count($blogs);$i++){?>
+                    <?php while($post=$query->fetch()){?>
                             <div class="card mb-4">
-                                <img class="card-img-top" src="<?=$blogs[$i]['image']?>" alt="..." width="200" height="500"/>
+                                <img class="card-img-top" src="<?=$post['image_link']?>" alt="..." width="200" height="500"/>
                                 <div class="card-body">
-                                    <div class="small text-muted"><?=$blogs[$i]['date']?></div>
-                                    <h2 class="card-title h4"><?=$blogs[$i]['title']?></h2>
-                                    <p class="card-text"><?=$blogs[$i]['summary']?></p>
+                                    <div class="small text-muted"><?=$post['date']?></div>
+                                    <h2 class="card-title h4"><?=$post['title']?></h2>
+                                    <p class="card-text"><?=$post['summary']?></p>
                                 </div>
                             </div>
                             <?php } ?>
