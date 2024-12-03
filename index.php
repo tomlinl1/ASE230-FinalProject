@@ -2,7 +2,7 @@
 require_once('functions.php');
 require_once('db.php');
 
-$query=$db->query('SELECT * FROM posts');
+$query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
 
 $auth = new Auth();
 
@@ -56,6 +56,7 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                                 <div class="card-body">
                                     <div class="small text-muted"><?=$post['date']?></div>
                                     <h2 class="card-title h4"><?=$post['title']?></h2>
+                                    <h4 class="card-title h4">Genre: <?=$post['genre']?></h4>
                                     <p class="card-text"><?=$post['summary']?></p>
                                 </div>
                             </div>
