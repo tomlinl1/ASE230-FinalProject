@@ -4,7 +4,7 @@ session_start();
 class Auth {
     private $error = '';
 
-    public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') {
+    public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') { // **REWORK** : Add Compare to DataBase Functionality
         if (isset($_SESSION['email'])) {
             header('Location: ' . $redirectTo);
             exit();
@@ -29,6 +29,7 @@ class Auth {
 
             $this->error = $this->validateInputs($email, $password);
 
+        // **REWORK** : Compare to DataBase
             if (empty($this->error)) {
                 if ($this->checkCredentials($email, $password)) {
                     header('Location: signin.php');
@@ -49,6 +50,7 @@ class Auth {
 
             $this->error = $this->validateSignupInputs($email, $password, $password_confirm);
 
+        // **REWORK** : Compare to DataBase
             if (empty($this->error)) {
                 // Check if the email is already registered
                 if ($this->emailExists($email)) {
@@ -63,13 +65,13 @@ class Auth {
         }
     }
 
-    public function signout() {
+    public function signout() { // This is fine!
         session_destroy();
         echo "<h2>You have successfully signed out. Click here to return to the <a href='index.php'>HomePage</a></h2>";
     }
 
     // Validate signup inputs
-    private function validateSignupInputs($email, $password, $password_confirm) {
+    private function validateSignupInputs($email, $password, $password_confirm) { 
         if (empty($email)) return 'You must enter your email';
         if (empty($password)) return 'You must enter your password';
         if (empty($password_confirm)) return 'You must confirm your password';
@@ -81,7 +83,7 @@ class Auth {
     }
 
     // Check if email already exists in the CSV file
-    private function emailExists($email) {
+    private function emailExists($email) { // **REWORK** : Compare to DataBase not CSV
         $fp = fopen('users.csv.php', 'r');
         while (!feof($fp)) {
             $line = fgets($fp);
@@ -96,7 +98,7 @@ class Auth {
     }
 
     // Register a new user by saving their credentials in the CSV file
-    private function registerUser($email, $password) {
+    private function registerUser($email, $password) { // **REWORK** : Compare to DataBase not CSV
         $fp = fopen('users.csv.php', 'a+');
         fputs($fp, $email . ';' . password_hash($password, PASSWORD_DEFAULT) . PHP_EOL);
         fclose($fp);
@@ -118,7 +120,7 @@ class Auth {
     }
 
     // Check login credentials
-    private function checkCredentials($email, $password) {
+    private function checkCredentials($email, $password) { // **REWORK** : Compare to DataBase
         $user_id = 0;
         $fp = fopen('users.csv.php', 'r');
         while (!feof($fp)) {
