@@ -1,80 +1,27 @@
 <?php
 require_once('../functions.php');
+require_once('../db.php');
 
 $auth = new Auth;
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
+$genreQuery=$db->query(' SELECT * from genres '); // Set up query for form drop down menu.
+
 if(count($_POST)>0){
-	require_once('../db.php');
 	$query=$db->prepare('
-	INSERT INTO posts(title,summary,content,image_link,user_ID,genre,date) 
-				VALUES(?,?,?,?,?,?,?)');
-	$query->execute([$_POST['title'],$_POST['summary'],$_POST['content'],$_POST['image'],$_SESSION['user_id'],$_POST['genre'],$_POST['date']]);
+	INSERT INTO posts(title,summary,content,image_link,user_ID,date) 
+				VALUES(?,?,?,?,?,?)');
+	$query->execute([$_POST['title'],$_POST['summary'],$_POST['content'],$_POST['image'],$_SESSION['user_id'],$_POST['date']]); // Create post
+    $currentPostID = $db->lastInsertID(); // Get the newly created post_ID
+    $query=$db->prepare('
+	INSERT INTO post_r_genres(post_ID,genre_ID) 
+				VALUES(?,?)');
+	$query->execute([$currentPostID,$_POST['genre']]); // Insert the genre_ID and post_ID in the post_r_genres table
+    header("Location: index.php"); // return user back to index after completion
+    exit(); // ensures the page doesn't reload.
 }
 
-/* 
-
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // File path for the JSON file
-    $file = "../posts.json";
-    
-
-    // Initialize an empty array for existing data
-    $existingData = [];
-
-    // Check if the file exists and is readable
-    if (file_exists($file) && filesize($file) > 0) {
-        // Read the existing JSON file
-        $json = file_get_contents($file);
-        // Decode the JSON data into an associative array
-        $existingData = json_decode($json, true);
-        
-        // Handle case where json_decode fails
-        if ($existingData === null) {
-            $existingData = [];
-        }
-    }
-
-    // Get the posted data
-    $author = $_POST['author'] ?? '';
-    $genre = $_POST['genre'] ?? '';
-    $content = $_POST['content'] ?? '';
-    $summary = $_POST['summary'] ?? '';
-    $date = $_POST['date'] ?? '';
-    $title = $_POST['title'] ?? '';
-    $image = $_POST['image'] ?? '';
-
-     // Automatically set the current date
-    $date = date('d-m-Y');
-
-    // Create an associative array with the new data
-    $newData = array(
-        "author" => $author,
-        "genre" => $genre,
-        "content" => $content,
-        "summary" => $summary,
-        "date" => $date,
-        "title" => $title,
-        "image" => $image,
-        "user_id" => $_SESSION['user_id']
-
-    );
-
-    // Append the new data to the existing data array
-    array_push($existingData, $newData);
-
-    // Convert the updated array back to JSON
-    $jsonData = json_encode($existingData, JSON_PRETTY_PRINT);
-
-    // Save the updated JSON data back to the file
-    file_put_contents($file, $jsonData); }
-
-    header("Location: index.php"); // return user back to index after completion
-    exit(); // ensures the page doesn't reload after someone hits the delete button
-*/
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -131,9 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <label for="title" class="form-label">Summary:</label>
                                     <input type="text" class="form-control" name="summary" required><br />
                                     <label for="title" class="form-label">Date:</label>
-                                    <input type="text" class="form-control" name="date" required><br />
+                                    <input type="date" class="form-control" name="date" required><br />
                                     <label for="genre" class="form-label">Genre:</label>
-                                    <input type="text" class="form-control" name="genre" required><br />
+                                    <select class="form-select" name="genre" required>
+                                        <?php while($genreID=$genreQuery->fetch()){?>
+                                        <option value="<?=$genreID['genre_ID']?>"><?=$genreID['genre']?></option>
+                                        <?php }?>
+                                        </select>
+                                        <br />
                                     <label for="Image Upload" class="form-label">Image (URL):</label>
                                     <input type="text" class="form-control" name="image" required><br />
                                     <label for="content" class="form-label">Content:</label>
