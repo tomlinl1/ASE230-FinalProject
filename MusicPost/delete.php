@@ -2,30 +2,32 @@
 require_once('../functions.php');
 require_once('../db.php');
 
+
+
 $auth = new Auth;
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
 if(!isset($_GET['index'])){
-    echo '<h2>How the hell did you get here? Get back to home you goober! <a href="index.php" >Home</a></h2>';
+    echo '<h2>How did you get here? Get back to home! <a href="index.php" >Home</a></h2>';
     die();
 }
-$i = $_GET['index'];
-$string = file_get_contents('../posts.json');
-$php_array = json_decode($string, true);
-$blogs = $php_array;
-if($blogs[$i]['user_id'] != $_SESSION['user_id']){
+$query = $db->prepare('SELECT * FROM posts NATURAL JOIN users WHERE post_ID=?');
+$query->execute([$_GET['index']]);
+$post=$query->fetch();
+
+if($post['user_ID'] != $_SESSION['user_id']){
     echo '<h2>This is not your post. Click here to return to <a href="index.php" >Home</a></h2>';
     die();
 }
 
+
+
+
 if (isset($_POST['delete'])) {
 
-    array_splice($blogs, $i, 1); // removes just 1 post (the selected post)
-
-
-    file_put_contents('../posts.json', json_encode($blogs, JSON_PRETTY_PRINT)); // Update JSON File
-
+    $deleteQuery = $db-> prepare('DELETE FROM POSTS WHERE post_ID=?');
+    $deleteQuery->execute([$_GET['index']]);
 
     header("Location: index.php"); // return user back to index after completion
     exit(); // ensures the page doesn't reload after someone hits the delete button
@@ -63,15 +65,15 @@ if (isset($_POST['delete'])) {
             <h1>Delete this Post?</h1>
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <?php if (empty($blogs)){?>
+                    <?php if (empty($post)){?>
                         <div class="alert alert-warning">No posts available to delete.</div>
                     <?php } else { ?>
                         <div class="card mb-4">
                             <div class="card-body">
-                                <h1 class="card-title"><?=$blogs[$i]['title']?></h1>
-                                <h5 class="card-subtitle text-muted"><?='by: '.$blogs[$i]['author']?></h5>
-                                <p class="small text-muted"><?='Posted on: '.$blogs[$i]['date']?></p>
-                                <p class="card-text"><?=$blogs[$i]['content']?></p>
+                                <h1 class="card-title"><?=$post['title']?></h1>
+                                <h5 class="card-subtitle text-muted"><?='by: '.$post['firstname'].' '.$post['lastname']?></h5>
+                                <p class="small text-muted"><?='Posted on: '.$post['date']?></p>
+                                <p class="card-text"><?=$post['content']?></p>
                                 <form method="post">
                                     <button type="submit" name="delete" class="btn btn-danger">Delete</button>
                                 </form>

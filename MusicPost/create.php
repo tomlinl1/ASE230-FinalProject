@@ -11,8 +11,8 @@ $genreQuery=$db->query(' SELECT * from genres '); // Set up query for form drop 
 if(count($_POST)>0){
 	$query=$db->prepare('
 	INSERT INTO posts(title,summary,content,image_link,user_ID,date) 
-				VALUES(?,?,?,?,?,?)');
-	$query->execute([$_POST['title'],$_POST['summary'],$_POST['content'],$_POST['image'],$_SESSION['user_id'],$_POST['date']]); // Create post
+				VALUES(?,?,?,?,?,CURRENT_TIMESTAMP)');
+	$query->execute([$_POST['title'],$_POST['summary'],$_POST['content'],$_POST['image'],$_SESSION['user_id']]); // Create post
     $currentPostID = $db->lastInsertID(); // Get the newly created post_ID
     $query=$db->prepare('
 	INSERT INTO post_r_genres(post_ID,genre_ID) 
@@ -77,8 +77,6 @@ if(count($_POST)>0){
                                     <input type="text" class="form-control" name="title" required><br />
                                     <label for="title" class="form-label">Summary:</label>
                                     <input type="text" class="form-control" name="summary" required><br />
-                                    <label for="title" class="form-label">Date:</label>
-                                    <input type="date" class="form-control" name="date" required><br />
                                     <label for="genre" class="form-label">Genre:</label>
                                     <select class="form-select" name="genre" required>
                                         <?php while($genreID=$genreQuery->fetch()){?>

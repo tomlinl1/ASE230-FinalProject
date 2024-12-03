@@ -53,8 +53,8 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                                 <a style="text-decoration: none; color: white;" href="index.php">Return To Home</a>
                             </button>
                             <?php if($_SESSION['user_id'] == $post['user_ID']){?>
-                                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$i?>">Edit Post</a></button>
-                                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$i?>">Delete Post</a></button>
+                                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$post['post_ID']?>">Edit Post</a></button>
+                                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$post['post_ID']?>">Delete Post</a></button>
                             <?php }?>
                         </div>
                     </div>
