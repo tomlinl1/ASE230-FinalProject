@@ -5,12 +5,15 @@ $auth = new Auth;
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
-/* Workflow for saving to the JSON:
-    decode original array
-    read file & array
-    append new entry onto end of array
-    overwrite file with whole new array
-    */
+if(count($_POST)>0){
+	require_once('../db.php');
+	$query=$db->prepare('
+	INSERT INTO posts(title,summary,content,image_link,user_ID,genre,date) 
+				VALUES(?,?,?,?,?,?,?)');
+	$query->execute([$_POST['title'],$_POST['summary'],$_POST['content'],$_POST['image'],$_SESSION['user_id'],$_POST['genre'],$_POST['date']]);
+}
+
+/* 
 
 
 
@@ -67,11 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonData = json_encode($existingData, JSON_PRETTY_PRINT);
 
     // Save the updated JSON data back to the file
-    file_put_contents($file, $jsonData);
+    file_put_contents($file, $jsonData); }
 
     header("Location: index.php"); // return user back to index after completion
     exit(); // ensures the page doesn't reload after someone hits the delete button
-}
+*/
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -127,8 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <input type="text" class="form-control" name="title" required><br />
                                     <label for="title" class="form-label">Summary:</label>
                                     <input type="text" class="form-control" name="summary" required><br />
-                                    <label for="content" class="form-label">Author:</label>
-                                    <input type="text" class="form-control" name="author" required><br />
                                     <label for="title" class="form-label">Date:</label>
                                     <input type="text" class="form-control" name="date" required><br />
                                     <label for="genre" class="form-label">Genre:</label>

@@ -1,21 +1,23 @@
 <?php
 require_once('../functions.php');
+require_once('../db.php');
+
+//$query=$db->prepare('SELECT * FROM posts natural join users WHERE user_ID=?'); //use this to get all posts on a user homepage.
+$query=$db->prepare('SELECT * FROM posts natural join users WHERE post_ID=?');
+$query->execute([$_GET['index']]);
+$post=$query->fetch();
 
 $auth = new Auth;
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
-    $i=$_GET['index'];    
-    $string = file_get_contents('../posts.json');
-    $php_array = json_decode($string, true);
-    $blogs = $php_array;
 ?>
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title><?=$blogs[$i]['title'].' by '.$blogs[$i]['author']?></title>
+        <title><?=$post['title'].' by '.$post['firstname'].' '.$post['lastname']?></title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     </head>
     
@@ -43,14 +45,14 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                     <!-- Blog post card-->
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h1 class="card-title"><?=$blogs[$i]['title']?></h1>
-                            <h5 class="card-subtitle text-muted"><?='by: '.$blogs[$i]['author']?></h5>
-                            <p class="small text-muted"><?='Posted on: '.$blogs[$i]['date']?></p>
-                            <p class="card-text"><?=$blogs[$i]['content']?></p>
+                            <h1 class="card-title"><?=$post['title']?></h1>
+                            <h5 class="card-subtitle text-muted"><?='by: '.$post['firstname'].' '.$post['lastname']?></h5>
+                            <p class="small text-muted"><?='Posted on: '.$post['date']?></p>
+                            <p class="card-text"><?=$post['content']?></p>
                             <button type="button" class="btn btn-secondary">
                                 <a style="text-decoration: none; color: white;" href="index.php">Return To Home</a>
                             </button>
-                            <?php if($_SESSION['user_id'] == $blogs[$i]['user_id']){?>
+                            <?php if($_SESSION['user_id'] == $post['user_ID']){?>
                                 <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$i?>">Edit Post</a></button>
                                 <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$i?>">Delete Post</a></button>
                             <?php }?>
