@@ -3,12 +3,17 @@
 require_once('../functions.php');
 require_once('../db.php');
 
-$query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
+$query=$db->prepare('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) WHERE user_ID=? ORDER BY date DESC');
+$query-> execute([$_SESSION['user_id']]);
 
+$userProfile = $db-> prepare('SELECT firstname, lastname, role FROM users WHERE user_ID=?');
+$userProfile-> execute([$_SESSION['user_id']]);
+$user= $userProfile -> fetch();
 
 $auth = new Auth;
 
 $auth->redirectIfNotAuthenticated('../signin.php');
+
 
 
 
@@ -35,7 +40,6 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link active" href="create.php">Create</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="user_profile.php">Profile</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="../signout.php">Sign Out</a></li>
                         
                     </ul>
@@ -46,8 +50,8 @@ $auth->redirectIfNotAuthenticated('../signin.php');
         <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
                 <div class="text-center my-5">
-                    <h1 class="fw-bolder">Our Blogs</h1>
-                    <p class="lead mb-0">A place to discuss all the news about music!</p>
+                    <h1 class="fw-bolder">Hello <?=$user['firstname']?>!</h1>
+                    <p class="lead mb-0">All of your posts right where you need them!</p>
                 </div>
             </div>
         </header>
@@ -68,7 +72,7 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                                     <a class="btn btn-primary" href="post_detail.php?index=<?=$post['post_ID']?>">Read more →</a>
                                 </div>
                             </div>
-                            <?php } ?>
+                        <?php } ?>
                     <!-- Nested row for non-featured blog posts
                     <div class="row justify-content-center">
                         <div class="col-lg-6">
@@ -130,9 +134,9 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                         </ul>
                     </nav>-->
                 </div>
-                <!-- Side widgets
+                <!--Side widgets
                 <div class="col-lg-4">-->
-                    <!-- Categories widget
+                    <!--Categories widget
                     <div class="card mb-4">
                         <div class="card-header">Categories</div>
                         <div class="card-body">
@@ -154,12 +158,12 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                             </div>
                         </div>
                     </div>-->
-                    <!-- Side widget
+                    <!--Side widget
                     <div class="card mb-4">
                         <div class="card-header">Side Widget</div>
                         <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
-                    </div>
-                </div>-->
+                    </div>-->
+                </div>
             </div>
         </div>
         <!-- Footer-->

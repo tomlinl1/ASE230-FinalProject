@@ -2,7 +2,6 @@
 require_once('../functions.php');
 require_once('../db.php');
 
-//$query=$db->prepare('SELECT * FROM posts natural join users WHERE user_ID=?'); //use this to get all posts on a user homepage.
 $query=$db->prepare('SELECT * FROM posts natural join users WHERE post_ID=?');
 $query->execute([$_GET['index']]);
 $post=$query->fetch();
