@@ -20,7 +20,7 @@ $userRoleQuery = $db->prepare('SELECT role FROM users WHERE user_ID = ?');
 $userRoleQuery->execute([$_SESSION['user_id']]);
 $userRole = $userRoleQuery->fetch();
 
-if($post['user_ID'] != $_SESSION['user_id'] && $userRole['role'] != 2){
+if(!$userRole || $post['user_ID'] != $_SESSION['user_id'] && $userRole['role'] != 2){
     echo '<h2>This is not your post. Click here to return to <a href="index.php" >Home</a></h2>';
     die();
 }
