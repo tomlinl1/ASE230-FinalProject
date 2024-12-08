@@ -1,9 +1,10 @@
 <?php
 session_start();
+require_once('db.php');
 
 class Auth {
     private $error = '';
-
+    
     public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') { // **REWORK** : Add Compare to DataBase Functionality
         if (isset($_SESSION['email'])) {
             header('Location: ' . $redirectTo);
@@ -29,7 +30,7 @@ class Auth {
 
             $this->error = $this->validateInputs($email, $password);
 
-        // **REWORK** : Compare to DataBase
+        //  Check for error, if successful go back to signin.php               --     All good, no rework.
             if (empty($this->error)) {
                 if ($this->checkCredentials($email, $password)) {
                     header('Location: signin.php');
@@ -50,7 +51,7 @@ class Auth {
 
             $this->error = $this->validateSignupInputs($email, $password, $password_confirm);
 
-        // **REWORK** : Compare to DataBase
+        // Update emailExists and registerUser
             if (empty($this->error)) {
                 // Check if the email is already registered
                 if ($this->emailExists($email)) {
@@ -65,9 +66,11 @@ class Auth {
         }
     }
 
-    public function signout() { // This is fine!
+    public function signout() { // This is fine! Edited to make it so there's no need to click a link to go back
         session_destroy();
-        echo "<h2>You have successfully signed out. Click here to return to the <a href='index.php'>HomePage</a></h2>";
+        echo "<h2>You have successfully signed out.</h2>";
+        header('Location: index.php');
+        
     }
 
     // Validate signup inputs
@@ -120,6 +123,7 @@ class Auth {
     }
 
     // Check login credentials
+    /*
     private function checkCredentials($email, $password) { // **REWORK** : Compare to DataBase
         $user_id = 0;
         $fp = fopen('users.csv.php', 'r');
@@ -137,5 +141,22 @@ class Auth {
         fclose($fp);
         return false;
     }
+    */
+    
+    private function checkCredentials($email, $password) {
+        global $db;
+    
+        $query = $db -> prepare("SELECT user_ID, password FROM users WHERE email = :email LIMIT 1");
+        $query -> execute(['email' => $email]);
+        $user = $query -> fetch();
+    
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['email'] = $email;
+            $_SESSION['user_id'] = $user['user_ID'];
+            return true;
+        }
+        return false;
+    }
+    
 }
 ?>
