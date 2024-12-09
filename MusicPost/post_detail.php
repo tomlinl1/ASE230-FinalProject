@@ -10,7 +10,7 @@ $userRoleQuery = $db->prepare('SELECT role FROM users WHERE user_ID = ?');
 $userRoleQuery->execute([$_SESSION['user_id']]);
 $userRole = $userRoleQuery->fetch();
 
-$auth = new Auth;
+$auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
@@ -55,7 +55,7 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                             <button type="button" class="btn btn-secondary">
                                 <a style="text-decoration: none; color: white;" href="index.php">Return To Home</a>
                             </button>
-                            <?php if($_SESSION['user_id'] == $post['user_ID'] || $userRole['role'] = 2){?>
+                            <?php if($_SESSION['user_id'] == $post['user_ID'] || $userRole == 2){?>
                                 <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$post['post_ID']?>">Edit Post</a></button>
                                 <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$post['post_ID']?>">Delete Post</a></button>
                             <?php }?>

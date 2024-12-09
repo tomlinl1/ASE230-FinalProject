@@ -87,7 +87,7 @@ if(count($_POST)>0){
                                     <label for="Image Upload" class="form-label">Image (URL):</label>
                                     <input type="text" class="form-control" name="image" required><br />
                                     <label for="content" class="form-label">Content:</label>
-                                    <input type="text" class="form-control" name="content" required><br />
+                                    <textarea type="text" class="form-control" name="content" rows="5" required></textarea><br />
                                     <input type="submit" value="Submit">
 
 
