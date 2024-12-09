@@ -1,12 +1,22 @@
 <?php
-require_once('functions.php');
-require_once('db.php');
 
-$query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
+require_once('../functions.php');
+require_once('../db.php');
 
-$auth = new Auth($db);
+$query=$db->prepare('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) WHERE user_ID=? ORDER BY date DESC');
+$query-> execute([$_SESSION['user_id']]);
 
-$auth->redirectIfAuthenticated('MusicPost/index.php');
+$userProfile = $db-> prepare('SELECT firstname, lastname, role FROM users WHERE user_ID=?');
+$userProfile-> execute([$_SESSION['user_id']]);
+$user= $userProfile -> fetch();
+
+$auth = new Auth;
+
+$auth->redirectIfNotAuthenticated('../signin.php');
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,20 +27,21 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
         <meta name="author" content="" />
         <title>GrooveNest - Music Content Blog</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+        <link href="../css/styles.css" rel="stylesheet" />
     </head>
     <body>
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="#!">GrooveNest</a>
+                <a class="navbar-brand" href="index.php">GrooveNest</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="signin.php">Sign In</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="signup.php">Sign Up</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="create.php">Create</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="../signout.php">Sign Out</a></li>
+                        
                     </ul>
                 </div>
             </div>
@@ -39,8 +50,8 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
         <header class="py-5 bg-light border-bottom mb-4">
             <div class="container">
                 <div class="text-center my-5">
-                    <h1 class="fw-bolder">Welcome to GrooveNest</h1>
-                    <p class="lead mb-0">A place to discuss all the news about music!</p>
+                    <h1 class="fw-bolder">Hello <?=$user['firstname']?>!</h1>
+                    <p class="lead mb-0">All of your posts right where you need them!</p>
                 </div>
             </div>
         </header>
@@ -58,9 +69,10 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                                     <h2 class="card-title h4"><?=$post['title']?></h2>
                                     <h4 class="card-title h4">Genre: <?=$post['genre']?></h4>
                                     <p class="card-text"><?=$post['summary']?></p>
+                                    <a class="btn btn-primary" href="post_detail.php?index=<?=$post['post_ID']?>">Read more →</a>
                                 </div>
                             </div>
-                            <?php } ?>
+                        <?php } ?>
                     <!-- Nested row for non-featured blog posts
                     <div class="row justify-content-center">
                         <div class="col-lg-6">
@@ -108,7 +120,7 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                             </div>
                         </div>
                     </div>-->
-                    <!-- Pagination
+                    <!-- Pagination--
                     <nav aria-label="Pagination" class="d-flex justify-content-center">
                         <hr class="my-0" />
                         <ul class="pagination justify-content-center my-4">
@@ -122,9 +134,9 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                         </ul>
                     </nav>-->
                 </div>
-                <!-- Side widgets
+                <!--Side widgets
                 <div class="col-lg-4">-->
-                    <!-- Categories widget
+                    <!--Categories widget
                     <div class="card mb-4">
                         <div class="card-header">Categories</div>
                         <div class="card-body">
@@ -146,12 +158,12 @@ $auth->redirectIfAuthenticated('MusicPost/index.php');
                             </div>
                         </div>
                     </div>-->
-                    <!-- Side widget
+                    <!--Side widget
                     <div class="card mb-4">
                         <div class="card-header">Side Widget</div>
                         <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
-                    </div>
-                </div>-->
+                    </div>-->
+                </div>
             </div>
         </div>
         <!-- Footer-->

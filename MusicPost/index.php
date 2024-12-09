@@ -1,15 +1,17 @@
 <?php
 
 require_once('../functions.php');
+require_once('../db.php');
+
+$query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
+
 
 $auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
 
-    $string = file_get_contents('../posts.json');
-    $php_array = json_decode($string, true);
-    $blogs = $php_array;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,12 +30,14 @@ $auth->redirectIfNotAuthenticated('../signin.php');
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="#!">GrooveNest</a>
+                <a class="navbar-brand" href="index.php">GrooveNest</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="create.php">Create</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="create.php">Create</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="user_profile.php">Profile</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="../signout.php">Sign Out</a></li>
+                        
                     </ul>
                 </div>
             </div>
@@ -53,14 +57,15 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                 <!-- Blog entries-->
                 <div class="col-lg-8">
                     <!-- Featured blog post-->
-                    <?php for($i=0; $i<count($blogs);$i++){?>
+                    <?php while($post=$query->fetch()){?>
                             <div class="card mb-4">
-                                <img class="card-img-top" src="<?=$blogs[$i]['image']?>" alt="..." width="200" height="500"/>
+                                <img class="card-img-top" src="<?=$post['image_link']?>" alt="..." width="200" height="500"/>
                                 <div class="card-body">
-                                    <div class="small text-muted"><?=$blogs[$i]['date']?></div>
-                                    <h2 class="card-title h4"><?=$blogs[$i]['title']?></h2>
-                                    <p class="card-text"><?=$blogs[$i]['summary']?></p>
-                                    <a class="btn btn-primary" href="detail.php?index=<?=$i?>">Read more →</a>
+                                    <div class="small text-muted"><?=$post['date']?></div>
+                                    <h2 class="card-title h4"><?=$post['title']?></h2>
+                                    <h4 class="card-title h4">Genre: <?=$post['genre']?></h4>
+                                    <p class="card-text"><?=$post['summary']?></p>
+                                    <a class="btn btn-primary" href="post_detail.php?index=<?=$post['post_ID']?>">Read more →</a>
                                 </div>
                             </div>
                             <?php } ?>

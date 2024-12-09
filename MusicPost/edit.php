@@ -1,36 +1,38 @@
 <?php
 require_once('../functions.php');
+require_once('../db.php');
 
 $auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 
 if(!isset($_GET['index'])){
-    echo '<h2>How the hell did you get here? Get back to home you goober! <a href="index.php" >Home</a></h2>';
+    echo '<h2>How did you get here? Get back to home! <a href="index.php" >Home</a></h2>';
     die();
 }
-$i = $_GET['index'];
-$string = file_get_contents('../posts.json');
-$php_array = json_decode($string, true);
-$blogs = $php_array;
-if($blogs[$i]['user_id'] != $_SESSION['user_id']){
+$query = $db->prepare('SELECT * FROM posts NATURAL JOIN users WHERE post_ID=?');
+$query->execute([$_GET['index']]);
+$post=$query->fetch();
+$genreQuery=$db->query(' SELECT * from genres ');
+
+$userRoleQuery = $db->prepare('SELECT role FROM users WHERE user_ID = ?');
+$userRoleQuery->execute([$_SESSION['user_id']]);
+$userRole = $userRoleQuery->fetch();
+
+
+
+if(!$userRole || $post['user_ID'] != $_SESSION['user_id'] && $userRole['role'] != 2){
     echo '<h2>This is not your post. Click here to return to <a href="index.php" >Home</a></h2>';
     die();
+
 }
 
 if (isset($_POST['update'])) {
     // Update the blog post data
-    $blogs[$i]['title'] = $_POST['title'];
-    $blogs[$i]['summary'] = $_POST['summary'];
-    $blogs[$i]['author'] = $_POST['author'];
-    $blogs[$i]['date'] = $_POST['date'];
-    $blogs[$i]['genre'] = $_POST['genre'];
-    $blogs[$i]['image'] = $_POST['image'];
-    $blogs[$i]['content'] = $_POST['content'];
-
-    // Save the updated blogs array back to the JSON file
-    file_put_contents('../posts.json', json_encode($blogs, JSON_PRETTY_PRINT));
-
+    $update = $db -> prepare('UPDATE posts SET title=?, summary=?, date=CURRENT_TIMESTAMP, image_link=?, content=? WHERE post_ID=?');
+    $update->execute([$_POST['title'],$_POST['summary'],$_POST['image'],$_POST['content'], $_GET['index']]);
+    $genreUpdate = $db -> prepare('UPDATE post_r_genres SET genre_ID=?');
+    $genreUpdate->execute([$_POST['genre']]);
     // Redirect or show a success message
     header("Location: index.php?message=Post Updated");
     exit();
@@ -67,35 +69,32 @@ if (isset($_POST['update'])) {
         <div class="container mt-5">
             <h1>Edit Post</h1>
 
-            <?php if ($blogs) { ?>
+            <?php if ($post) { ?>
                 <form method="POST" class="mt-4">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" name="title" value="<?= $blogs[$i]['title'] ?>" required>
+                        <input type="text" class="form-control" id="title" name="title" value="<?= $post['title'] ?>" required>
                     </div>
                     <div class="mb-3">
                         <label for="summary" class="form-label">Summary</label>
-                        <input type="text" class="form-control" id="summary" name="summary" value="<?= $blogs[$i]['summary'] ?>" required>
+                        <input type="text" class="form-control" id="summary" name="summary" value="<?= $post['summary'] ?>" required>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="author" class="form-label">Author</label>
-                        <input type="text" class="form-control" id="author" name="author" value="<?= $blogs[$i]['author'] ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" value="<?= $blogs[$i]['date'] ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="genre" class="form-label">Genre</label>
-                        <input type="text" class="form-control" id="genre" name="genre" value="<?= $blogs[$i]['genre'] ?>" required>
+                    <label for="genre" class="form-label">Genre:</label>
+                        <select class="form-select" name="genre" required>
+                            <?php while($genreID=$genreQuery->fetch()){?>
+                                <option value="<?=$genreID['genre_ID']?>"><?=$genreID['genre']?></option>
+                            <?php }?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="image" class="form-label">Image</label>
-                        <input type="text" class="form-control" id="image" name="image" value="<?= $blogs[$i]['image'] ?>" required>
+                        <input type="text" class="form-control" id="image" name="image" value="<?= $post['image_link'] ?>" required>
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">Content</label>
-                        <textarea class="form-control" id="content" name="content" rows="5" required><?= $blogs[$i]['content'] ?></textarea>
+                        <textarea class="form-control" id="content" name="content" rows="5" required><?= $post['content'] ?></textarea>
                     </div>
                     <button type="submit" name="update" class="btn btn-primary">Update Post</button>
                     <button type="button" class="btn btn-secondary">
