@@ -3,7 +3,7 @@
 require_once('../functions.php');
 require_once('../db.php');
 
-$auth = new Auth;
+$auth = new Auth($db);
 $auth->redirectIfNotAuthenticated('../signin.php');
 
 $userProfile = $db->prepare('SELECT role FROM users WHERE user_ID=?');
