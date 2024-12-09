@@ -5,9 +5,11 @@
 Video Link: 
 
 Credentials to the website:<br/>
+
 Non-Admin:<br/>
-  User: user@email.com<br/>  
+  User: user@email.com<br/>
   Pass: user_only<br/>
+  
 Admin:<br/>
   User: admin@email.com<br/>
   Pass: i_am_admin<br/>
