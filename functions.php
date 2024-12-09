@@ -10,7 +10,7 @@ class Auth {
         $this->db = $db;
     }
 
-    public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') { // **REWORK** : Add Compare to DataBase Functionality
+    public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') { 
         if (isset($_SESSION['email'])) {
             header('Location: ' . $redirectTo);
             exit();
