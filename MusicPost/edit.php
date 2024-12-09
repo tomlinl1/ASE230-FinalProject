@@ -7,8 +7,7 @@ $auth = new Auth($db);
 $auth->redirectIfNotAuthenticated('../signin.php');
 
 if(!isset($_GET['index'])){
-    echo '<h2>How did you get here? Get back to home! <a href="index.php" >Home</a></h2>';
-    die();
+    header('Location: index.php');
 }
 $query = $db->prepare('SELECT * FROM posts NATURAL JOIN users WHERE post_ID=?');
 $query->execute([$_GET['index']]);
@@ -22,8 +21,7 @@ $userRole = $userRoleQuery->fetch();
 
 
 if(!$userRole || $post['user_ID'] != $_SESSION['user_id'] && $userRole['role'] != 2){
-    echo '<h2>This is not your post. Click here to return to <a href="index.php" >Home</a></h2>';
-    die();
+    header('Location: index.php');
 
 }
 

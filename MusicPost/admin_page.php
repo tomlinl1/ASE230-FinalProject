@@ -15,8 +15,7 @@ $query = $db->prepare('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL J
 $query->execute();
 
 if(!$userRole || $userRole['role'] != 2){
-    echo '<h2>You are not an admin. Click here to return to <a href="index.php" >Home</a></h2> ';
-    die();
+    header('Location: index.php');
 }
 
 ?>
