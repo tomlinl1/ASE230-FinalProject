@@ -4,7 +4,7 @@ require_once('db.php');
 
 $query=$db->query('SELECT * FROM posts');
 
-$auth = new Auth();
+$auth = new Auth($db);
 
 $auth->redirectIfAuthenticated('MusicPost/index.php');
 ?>
