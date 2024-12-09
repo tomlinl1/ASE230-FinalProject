@@ -148,7 +148,7 @@ class Auth {
 
     // Check login credentials against database
     private function checkCredentials($email, $password) {
-        $query = $db -> prepare("SELECT user_ID, password FROM users WHERE email = :email LIMIT 1");
+        $query = $this -> db -> prepare("SELECT user_ID, password FROM users WHERE email = :email LIMIT 1");
         $query -> execute(['email' => $email]);
         $user = $query -> fetch();
     
