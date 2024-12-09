@@ -37,6 +37,7 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                         <li class="nav-item"><a class="nav-link active" href="create.php">Create</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="user_profile.php">Profile</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="../signout.php">Sign Out</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="Admin_page.php">Admin</a></li>
                         
                     </ul>
                 </div>
