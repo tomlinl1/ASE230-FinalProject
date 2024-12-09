@@ -5,6 +5,11 @@ require_once('../db.php');
 
 $query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
 
+$userRoleQuery = $db->prepare('SELECT role FROM users WHERE user_ID = ?');
+$userRoleQuery->execute([$_SESSION['user_id']]);
+$userRole = $userRoleQuery->fetch();
+
+
 
 $auth = new Auth;
 
@@ -37,8 +42,6 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                         <li class="nav-item"><a class="nav-link active" href="create.php">Create</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="user_profile.php">Profile</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="../signout.php">Sign Out</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="Admin_page.php">Admin</a></li>
-                        
                     </ul>
                 </div>
             </div>
@@ -131,9 +134,10 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                         </ul>
                     </nav>-->
                 </div>
-                <!-- Side widgets
-                <div class="col-lg-4">-->
-                    <!-- Categories widget
+                <!-- Side widgets -->
+                <?php if($userRole['role'] == 2) {?>
+                <div class="col-lg-4">
+                    <!-- Categories widget 
                     <div class="card mb-4">
                         <div class="card-header">Categories</div>
                         <div class="card-body">
@@ -154,13 +158,18 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                                 </div>
                             </div>
                         </div>
-                    </div>-->
-                    <!-- Side widget
+                    </div> -->
+                    <!-- Side widget -->
                     <div class="card mb-4">
-                        <div class="card-header">Side Widget</div>
-                        <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
+                        <div class="card-header">Welcome Admin!</div>
+                        <div class="card-body">
+                            <p>Click here to access the <a class="btn btn-primary" href="admin_page.php">Admin Dashboard</a></p>
+                            
+
+                        </div>
                     </div>
-                </div>-->
+                </div>
+                <?php }?>
             </div>
         </div>
         <!-- Footer-->

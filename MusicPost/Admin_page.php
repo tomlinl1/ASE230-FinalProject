@@ -10,26 +10,8 @@ $userProfile = $db->prepare('SELECT role FROM users WHERE user_ID=?');
 $userProfile->execute([$_SESSION['user_id']]);
 $user = $userProfile->fetch();
 
-if (isset($_GET['delete_id'])) {
-    $deleteQuery = $db->prepare('DELETE FROM posts WHERE post_ID = ?');
-    $deleteQuery->execute([$_GET['delete_id']]);
-    header('Location: admin_area.php');
-    exit();
-}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'];
-    $summary = $_POST['summary'];
-    $image_link = $_POST['image_link'];
-    $genre = $_POST['genre'];
-
-    $createQuery = $db->prepare('INSERT INTO posts (title, summary, image_link, genre) VALUES (?, ?, ?, ?)');
-    $createQuery->execute([$title, $summary, $image_link, $genre]);
-    header('Location: admin_area.php');
-    exit();
-}
-
-$query = $db->prepare('SELECT * FROM posts ORDER BY date DESC');
+$query = $db->prepare('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
 $query->execute();
 
 ?>
@@ -63,29 +45,135 @@ $query->execute();
 <div class="container">
     <h1 class="my-5 text-center">Admin Dashboard</h1>
 
-    <h2>Create New Post</h2>
-        <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="create.php?index=<?=$post['post_ID']?>">Create Post</a></button>
-    </form>
+    <h2>Click here to create a new post:</h2>
+        <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="create.php">Make a Post</a></button>
 
     <hr>
+    
+
 
     <h2>All Posts</h2>
-    <?php while ($post = $query->fetch()) { ?>
-        <div class="card mb-4">
-            <img class="card-img-top" src="<?=$post['image_link']?>" alt="..." width="200" height="500"/>
-            <div class="card-body">
-                <div class="small text-muted"><?= $post['date'] ?></div>
-                <h2 class="card-title h4"><?= $post['title'] ?></h2>
-                <p class="card-text"><?= $post['summary'] ?></p>
-                <a class="btn btn-primary" href="post_detail.php?index=<?= $post['post_ID'] ?>">Read more →</a>
-                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$post['post_ID']?>">Edit Post</a></button>
-                <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$post['post_ID']?>">Delete Post</a></button>
+    <div class="container">
+            <div class="row justify-content-center">
+                <!-- Blog entries-->
+                <div class="col-lg-8">
+                    <!-- Featured blog post-->
+                    <?php while($post=$query->fetch()){?>
+                            <div class="card mb-4">
+                                <img class="card-img-top" src="<?=$post['image_link']?>" alt="..." width="200" height="500"/>
+                                <div class="card-body">
+                                    <div class="small text-muted"><?=$post['date']?></div>
+                                    <h2 class="card-title h4"><?=$post['title']?></h2>
+                                    <h4 class="card-title h4">Genre: <?=$post['genre']?></h4>
+                                    <p class="card-text"><?=$post['summary']?></p>
+                                    <a class="btn btn-primary" href="post_detail.php?index=<?=$post['post_ID']?>">Read more →</a>
+                                    <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="edit.php?index=<?=$post['post_ID']?>">Edit Post</a></button>
+                                    <button type="button" class="btn btn-secondary"><a style="text-decoration: none; color: white;" href="delete.php?index=<?=$post['post_ID']?>">Delete Post</a></button>
+                                </div>
+                            </div>
+                            <?php } ?>
+                    <!-- Nested row for non-featured blog posts
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            Blog post
+                            <div class="card mb-4">
+                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                                <div class="card-body">
+                                    <div class="small text-muted">January 1, 2023</div>
+                                    <h2 class="card-title h4">Post Title</h2>
+                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
+                                    <a class="btn btn-primary" href="#!">Read more →</a>
+                                </div>
+                            </div>
+                            Blog post
+                            <div class="card mb-4">
+                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                                <div class="card-body">
+                                    <div class="small text-muted">January 1, 2023</div>
+                                    <h2 class="card-title h4">Post Title</h2>
+                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
+                                    <a class="btn btn-primary" href="#!">Read more →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            Blog post
+                            <div class="card mb-4">
+                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                                <div class="card-body">
+                                    <div class="small text-muted">January 1, 2023</div>
+                                    <h2 class="card-title h4">Post Title</h2>
+                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
+                                    <a class="btn btn-primary" href="#!">Read more →</a>
+                                </div>
+                            </div>
+                            Blog post
+                            <div class="card mb-4">
+                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                                <div class="card-body">
+                                    <div class="small text-muted">January 1, 2023</div>
+                                    <h2 class="card-title h4">Post Title</h2>
+                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam.</p>
+                                    <a class="btn btn-primary" href="#!">Read more →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!-- Pagination--
+                    <nav aria-label="Pagination" class="d-flex justify-content-center">
+                        <hr class="my-0" />
+                        <ul class="pagination justify-content-center my-4">
+                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+                            <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+                        </ul>
+                    </nav>-->
+                </div>
+                <!-- Side widgets
+                <div class="col-lg-4">-->
+                    <!-- Categories widget
+                    <div class="card mb-4">
+                        <div class="card-header">Categories</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a href="#!">Web Design</a></li>
+                                        <li><a href="#!">HTML</a></li>
+                                        <li><a href="#!">Freebies</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li><a href="#!">JavaScript</a></li>
+                                        <li><a href="#!">CSS</a></li>
+                                        <li><a href="#!">Tutorials</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <!-- Side widget
+                    <div class="card mb-4">
+                        <div class="card-header">Side Widget</div>
+                        <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
+                    </div>
+                </div>-->
             </div>
         </div>
-    <?php } ?>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        </div>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; GrooveNest 2024</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
 </body>
 </html>
 
