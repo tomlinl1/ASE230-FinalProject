@@ -8,11 +8,16 @@ $auth->redirectIfNotAuthenticated('../signin.php');
 
 $userProfile = $db->prepare('SELECT role FROM users WHERE user_ID=?');
 $userProfile->execute([$_SESSION['user_id']]);
-$user = $userProfile->fetch();
+$userRole = $userProfile->fetch();
 
 
 $query = $db->prepare('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
 $query->execute();
+
+if(!$userRole || $userRole['role'] != 2){
+    echo '<h2>You are not an admin. Click here to return to <a href="index.php" >Home</a></h2> ';
+    die();
+}
 
 ?>
 

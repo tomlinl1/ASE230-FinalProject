@@ -135,7 +135,7 @@ $auth->redirectIfNotAuthenticated('../signin.php');
                     </nav>-->
                 </div>
                 <!-- Side widgets -->
-                <?php if($userRole['role'] == 2) {?>
+                <?php if($userRole && $userRole['role'] == 2) {?>
                 <div class="col-lg-4">
                     <!-- Categories widget 
                     <div class="card mb-4">
