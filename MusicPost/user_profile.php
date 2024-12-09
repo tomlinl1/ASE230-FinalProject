@@ -10,7 +10,7 @@ $userProfile = $db-> prepare('SELECT firstname, lastname, role FROM users WHERE 
 $userProfile-> execute([$_SESSION['user_id']]);
 $user= $userProfile -> fetch();
 
-$auth = new Auth;
+$auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 

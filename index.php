@@ -4,7 +4,7 @@ require_once('db.php');
 
 $query=$db->query('SELECT * FROM posts NATURAL JOIN (post_r_genres NATURAL JOIN genres) ORDER BY date DESC');
 
-$auth = new Auth();
+$auth = new Auth($db);
 
 $auth->redirectIfAuthenticated('MusicPost/index.php');
 ?>

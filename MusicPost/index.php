@@ -11,7 +11,7 @@ $userRole = $userRoleQuery->fetch();
 
 
 
-$auth = new Auth;
+$auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 

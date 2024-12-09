@@ -4,6 +4,11 @@ require_once('db.php');
 
 class Auth {
     private $error = '';
+    private $db;
+
+    public function __construct($db) {
+        $this->db = $db;
+    }
 
     public function redirectIfAuthenticated($redirectTo = 'MusicPost/index.php') { // **REWORK** : Add Compare to DataBase Functionality
         if (isset($_SESSION['email'])) {
@@ -30,7 +35,7 @@ class Auth {
 
             $this->error = $this->validateInputs($email, $password);
 
-        // **REWORK** : Compare to DataBase
+        //  Check for error, if successful go back to signin.php               --     All good, no rework.
             if (empty($this->error)) {
                 if ($this->checkCredentials($email, $password)) {
                     header('Location: signin.php');
@@ -48,17 +53,19 @@ class Auth {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             $password_confirm = $_POST['password_confirm'] ?? '';
+            $fname = $_POST['fname'] ?? '';
+            $lname = $_POST['lname'] ?? '';
 
             $this->error = $this->validateSignupInputs($email, $password, $password_confirm);
 
-        // **REWORK** : Compare to DataBase
+        // Update emailExists and registerUser
             if (empty($this->error)) {
                 // Check if the email is already registered
                 if ($this->emailExists($email)) {
                     $this->error = 'The email is already registered';
                 } else {
                     // Save the user credentials to the CSV file
-                    $this->registerUser($email, $password);
+                    $this->registerUser($fname, $lname, $email, $password);
                     header('Location: signin.php');
                     die();
                 }
@@ -66,9 +73,11 @@ class Auth {
         }
     }
 
-    public function signout() { // This is fine!
+    public function signout() { // This is fine! Edited to make it so there's no need to click a link to go back
         session_destroy();
-        echo "<h2>You have successfully signed out. Click here to return to the <a href='index.php'>HomePage</a></h2>";
+        echo "<h2>You have successfully signed out.</h2>";
+        header('Location: index.php');
+        
     }
 
     // Validate signup inputs
@@ -83,27 +92,44 @@ class Auth {
         return ''; // No errors
     }
 
-    // Check if email already exists in the CSV file
-    private function emailExists($email) { // **REWORK** : Compare to DataBase not CSV
-        $fp = fopen('users.csv.php', 'r');
-        while (!feof($fp)) {
-            $line = fgets($fp);
-            $line = explode(';', $line);
-            if (count($line) == 2 && $email == $line[0]) {
-                fclose($fp);
-                return true;
-            }
-        }
-        fclose($fp);
-        return false;
+    // Check if email already exists in the database
+    private function emailExists($email) {
+        $query = $this->db->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
+        $query->execute(['email' => $email]);
+        
+        $count = $query->fetchColumn();
+        
+        return $count > 0;
     }
+    
+    
+    // Register a new user by saving their credentials to the database ***
+    
 
-    // Register a new user by saving their credentials in the CSV file
-    private function registerUser($email, $password) { // **REWORK** : Compare to DataBase not CSV
-        $fp = fopen('users.csv.php', 'a+');
-        fputs($fp, $email . ';' . password_hash($password, PASSWORD_DEFAULT) . PHP_EOL);
-        fclose($fp);
+    private function registerUser($fname, $lname, $email, $password) {
+        // Check if the email already exists
+        if ($this->emailExists($email)) {
+            return 'This email is already registered.';
+        }
+    
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    
+        // Default role perms
+        $role = '1';
+    
+        $query = $this->db->prepare("INSERT INTO users (email, password, firstname, lastname, role) VALUES (:email, :password, :firstname, :lastname, :role)");
+        
+        $query->execute([
+            'email' => $email,
+            'password' => $hashedPassword,
+            'firstname' => $fname,
+            'lastname' => $lname,
+            'role' => $role
+        ]);
+    
+        return 'User registered successfully.';
     }
+    
 
     // Getter for error message
     public function getError() {
@@ -120,23 +146,19 @@ class Auth {
         return ''; // No errors
     }
 
-    // Check login credentials
-    private function checkCredentials($email, $password) { // **REWORK** : Compare to DataBase
-        $user_id = 0;
-        $fp = fopen('users.csv.php', 'r');
-        while (!feof($fp)) {
-            $line = fgets($fp);
-            $line = explode(';', $line);
-            if (count($line) == 2 && $email == $line[0] && password_verify(trim($password), trim($line[1]))) {
-                fclose($fp);
-                $_SESSION['email'] = $line[0];
-                $_SESSION['user_id'] = $user_id;
-                return true;
-            }
-            $user_id++;
+    // Check login credentials against database
+    private function checkCredentials($email, $password) {
+        $query = $this -> db -> prepare("SELECT user_ID, password FROM users WHERE email = :email LIMIT 1");
+        $query -> execute(['email' => $email]);
+        $user = $query -> fetch();
+    
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['email'] = $email;
+            $_SESSION['user_id'] = $user['user_ID'];
+            return true;
         }
-        fclose($fp);
         return false;
     }
+    
 }
 ?>

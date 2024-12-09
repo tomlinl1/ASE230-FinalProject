@@ -1,9 +1,9 @@
 <?php
 require_once('functions.php');
 
-$auth = new Auth();
+$auth = new Auth($db);
 
-$auth->signup();
+$auth->signup($_POST['email'] ?? ' ');
 
 $error = $auth->getError();
 
@@ -36,13 +36,13 @@ if(!empty($error)){
                             </div>
                         <?php } ?>
                         <form method="POST">
-                        <div class="mb-3">
-                                <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" name="firstName" required>
+                            <div class="mb-3">
+                                <label for="fname" class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="fname" required>
                             </div>
                             <div class="mb-3">
-                                <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" name="lastName" required>
+                                <label for="lname" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="lname" required>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>

@@ -4,7 +4,7 @@ require_once('../db.php');
 
 
 
-$auth = new Auth;
+$auth = new Auth($db);
 
 $auth->redirectIfNotAuthenticated('../signin.php');
 

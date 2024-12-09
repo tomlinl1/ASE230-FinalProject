@@ -1,5 +1,6 @@
 <?php
     require_once('functions.php');
-    $auth = new Auth();
+    $auth = new Auth($db);
     $auth->signout();
+    
 ?>

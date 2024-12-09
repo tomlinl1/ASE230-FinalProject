@@ -1,7 +1,7 @@
 <?php
  require_once('functions.php');
 
- $auth = new Auth();
+ $auth = new Auth($db);
  
  $auth->redirectIfAuthenticated('MusicPost/index.php');
  $auth->login();
