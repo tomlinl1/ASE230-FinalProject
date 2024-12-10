@@ -2,7 +2,7 @@
 ## Michael Hoffmeier
 ## Landen Tomlin
 
-Video Link: 
+Video Link: https://youtu.be/04lx08oMtEU
 
 Credentials to the website:<br/>
 
