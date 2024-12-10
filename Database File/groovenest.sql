@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 09, 2024 at 06:26 AM
+-- Generation Time: Dec 10, 2024 at 03:13 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -61,20 +61,18 @@ CREATE TABLE `posts` (
   `content` text NOT NULL,
   `image_link` mediumtext DEFAULT NULL,
   `user_ID` int(10) UNSIGNED NOT NULL,
-  `date` date NOT NULL DEFAULT current_timestamp(),
-  `likecounter` int(11) NOT NULL DEFAULT 0,
-  `dislikecounter` int(11) NOT NULL DEFAULT 0
+  `date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`post_ID`, `title`, `summary`, `content`, `image_link`, `user_ID`, `date`, `likecounter`, `dislikecounter`) VALUES
-(1, 'The Album of the Year?', 'Ants From Up There has been on constant replay for me, what\'s so good about it?', 'Ants From Up There, the second album by British band Black Country, New Road, is an extraordinary blend of emotion, innovation, and musicianship. Released in 2022, the album breaks away from traditional genre boundaries, weaving together post-rock, art rock, and experimental pop, all while maintaining an emotional core that resonates deeply with listeners. What makes Ants From Up There stand out is its raw vulnerability, particularly in its lyrics. The album’s themes of longing, loss, and personal struggle are poetically expressed by lead vocalist Isaac Wood, whose departure from the band shortly before the album’s release adds another layer of poignancy. Songs like \"The Place Where He Inserted the Blade\" and \"Concorde\" are hauntingly beautiful, with intricate arrangements that build into cathartic crescendos. The band’s musicianship is another highlight. Their use of violin, saxophone, and unconventional song structures makes each track feel like an emotional journey. The music shifts from delicate melodies to grand, sweeping moments, creating a sense of tension and release that keeps you engaged throughout the album. Ants From Up There is not just an album; it\'s an experience that draws you in and leaves you reflecting on its beauty long after it ends.', 'https://media.pitchfork.com/photos/61649694110e7cd222907396/master/pass/Black-Country-New-Road.jpg', 1, '2024-11-26', 2, 100),
-(2, 'Louder Than Life 2024', 'Metal Festival in Louisville, KY. 10th Anniversary this year, got phone stolen. 5/10 might not go again.', 'This year I decided to go again to a huge rock/metal festival in my hometown called Louder than Life. I got to see almost 50 bands, had some fun experiences, got to mosh, and got to see some of the bands I\'ve wanted to see since I was young. However, a significant downer for me was when I got my phone pickpocketed and stolen, and in addition to that the culture around the festival was significantly different. Not sure that I will actually go again unless it\'s it includes my absolute favorite bands.', 'https://images.squarespace-cdn.com/content/v1/6043f3491f30ca562809c10b/1a3c2358-01c4-44fd-875e-bc62e9d4a607/LTL24_SocialAssets_1200x1500.jpg?format=1500', 3, '2024-11-26', 300, 500),
-(9, 'Learning how to make a post', 'Here is a guide to creating a post.', 'Here is a guide to making a post. \r\n1. Type your title and give a brief summary\r\n2. Pick a Genre that describes your post.\r\n3. Upload an image link to your post.\r\n4. Type your content and then upload it!', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vZh3-7FoXfKF7q4Y9xc8XiuGl7ohegaP8w&s', 5, '2024-12-09', 0, 0),
-(10, 'Creating Music', 'My Journey of Making Music', 'I have been to a recording studio twice and I really enjoy making music. Overall, I have been playing for a couple years and I want to get better at doing it!', 'https://upayasound.com/wp-content/uploads/2022/01/recording-music-studio-scaled.jpg', 4, '2024-12-09', 0, 0);
+INSERT INTO `posts` (`post_ID`, `title`, `summary`, `content`, `image_link`, `user_ID`, `date`) VALUES
+(1, 'The Album of the Year?', 'Ants From Up There has been on constant replay for me, what\'s so good about it?', 'Ants From Up There, the second album by British band Black Country, New Road, is an extraordinary blend of emotion, innovation, and musicianship. Released in 2022, the album breaks away from traditional genre boundaries, weaving together post-rock, art rock, and experimental pop, all while maintaining an emotional core that resonates deeply with listeners. What makes Ants From Up There stand out is its raw vulnerability, particularly in its lyrics. The album’s themes of longing, loss, and personal struggle are poetically expressed by lead vocalist Isaac Wood, whose departure from the band shortly before the album’s release adds another layer of poignancy. Songs like \"The Place Where He Inserted the Blade\" and \"Concorde\" are hauntingly beautiful, with intricate arrangements that build into cathartic crescendos. The band’s musicianship is another highlight. Their use of violin, saxophone, and unconventional song structures makes each track feel like an emotional journey. The music shifts from delicate melodies to grand, sweeping moments, creating a sense of tension and release that keeps you engaged throughout the album. Ants From Up There is not just an album; it\'s an experience that draws you in and leaves you reflecting on its beauty long after it ends.', 'https://media.pitchfork.com/photos/61649694110e7cd222907396/master/pass/Black-Country-New-Road.jpg', 1, '2024-11-26'),
+(2, 'Louder Than Life 2024', 'Metal Festival in Louisville, KY. 10th Anniversary this year, got phone stolen. 5/10 might not go again.', 'This year I decided to go again to a huge rock/metal festival in my hometown called Louder than Life. I got to see almost 50 bands, had some fun experiences, got to mosh, and got to see some of the bands I\'ve wanted to see since I was young. However, a significant downer for me was when I got my phone pickpocketed and stolen, and in addition to that the culture around the festival was significantly different. Not sure that I will actually go again unless it\'s it includes my absolute favorite bands.', 'https://images.squarespace-cdn.com/content/v1/6043f3491f30ca562809c10b/1a3c2358-01c4-44fd-875e-bc62e9d4a607/LTL24_SocialAssets_1200x1500.jpg?format=1500', 3, '2024-11-26'),
+(9, 'Learning how to make a post', 'Here is a guide to creating a post.', 'Here is a guide to making a post. \r\n1. Type your title and give a brief summary\r\n2. Pick a Genre that describes your post.\r\n3. Upload an image link to your post.\r\n4. Type your content and then upload it!', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vZh3-7FoXfKF7q4Y9xc8XiuGl7ohegaP8w&s', 5, '2024-12-09'),
+(10, 'Creating Music', 'My Journey of Making Music', 'I have been to a recording studio twice and I really enjoy making music. Overall, I have been playing for a couple years and I want to get better at doing it!', 'https://upayasound.com/wp-content/uploads/2022/01/recording-music-studio-scaled.jpg', 4, '2024-12-09');
 
 -- --------------------------------------------------------
 
